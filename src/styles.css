@@ -1,6 +1,33 @@
 :root {
-  color: #172033;
-  background: #eef3fb;
+  --color-bg: #eef3fb;
+  --color-surface: rgba(255, 255, 255, 0.92);
+  --color-surface-solid: #ffffff;
+  --color-surface-muted: #f7f9fe;
+  --color-panel: #eef3fb;
+  --color-panel-strong: #dfe7f6;
+  --color-text: #172033;
+  --color-muted: #58657f;
+  --color-subtle: #8b96ab;
+  --color-border: #dfe7f6;
+  --color-border-strong: #cad4ea;
+  --color-primary: #3157d5;
+  --color-primary-strong: #243fa6;
+  --color-success-bg: #e9f8ef;
+  --color-success-border: #bde8ca;
+  --color-success-text: #176a32;
+  --color-error: #b3261e;
+  --radius-sm: 10px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --radius-xl: 30px;
+  --shadow-sm: 0 2px 10px rgba(32, 42, 70, 0.1);
+  --shadow-md: 0 16px 45px rgba(24, 38, 75, 0.1);
+  --shadow-lg: 0 24px 70px rgba(24, 38, 75, 0.12);
+  --focus-ring: 0 0 0 4px rgba(49, 87, 213, 0.14);
+  color: var(--color-text);
+  background:
+    radial-gradient(circle at top left, rgba(255, 255, 255, 0.8), transparent 38rem),
+    var(--color-bg);
   font-family:
     Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   font-synthesis: none;
@@ -25,8 +52,8 @@ input {
 button {
   border: 0;
   border-radius: 999px;
-  background: #3157d5;
-  color: #ffffff;
+  background: var(--color-primary);
+  color: var(--color-surface-solid);
   cursor: pointer;
   font-weight: 700;
   padding: 0.85rem 1.2rem;
@@ -37,7 +64,7 @@ button {
 }
 
 button:hover:not(:disabled) {
-  background: #243fa6;
+  background: var(--color-primary-strong);
   box-shadow: 0 10px 20px rgba(49, 87, 213, 0.2);
   transform: translateY(-1px);
 }
@@ -48,8 +75,8 @@ button:disabled {
 }
 
 input {
-  border: 1px solid #cad4ea;
-  border-radius: 18px;
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-md);
   font-size: 1.25rem;
   letter-spacing: 0.2em;
   min-width: 0;
@@ -58,39 +85,49 @@ input {
 }
 
 input:focus {
-  border-color: #3157d5;
-  box-shadow: 0 0 0 4px rgba(49, 87, 213, 0.14);
+  border-color: var(--color-primary);
+  box-shadow: var(--focus-ring);
   outline: none;
 }
 
 .app-shell {
   margin: 0 auto;
-  max-width: 980px;
+  max-width: 1080px;
   padding: 2rem;
 }
 
 .hero {
-  align-items: flex-start;
+  align-items: stretch;
   display: flex;
   flex-wrap: wrap;
-  gap: 1.5rem 2rem;
+  gap: 1.25rem;
   justify-content: space-between;
   margin-bottom: 1.75rem;
 }
 
 .hero-text {
+  background: var(--color-surface);
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-md);
   flex: 1 1 280px;
   max-width: 520px;
   min-width: 0;
+  padding: 1.5rem;
 }
 
 .hero-controls {
+  background: var(--color-surface);
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-md);
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
+  gap: 1rem;
   flex: 1 1 300px;
-  max-width: 420px;
+  max-width: 460px;
   min-width: min(100%, 280px);
+  padding: 1.1rem;
 }
 
 .control-row {
@@ -100,12 +137,12 @@ input:focus {
 }
 
 .control-label {
-  flex: 0 0 5.5rem;
-  font-size: 0.75rem;
+  flex: 0 0 5.75rem;
+  font-size: 0.72rem;
   font-weight: 800;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: #64708a;
+  color: var(--color-subtle);
   line-height: 1.3;
 }
 
@@ -121,11 +158,34 @@ input:focus {
   margin: 0;
   font-size: 0.75rem;
   line-height: 1.45;
-  color: #64708a;
+  color: var(--color-muted);
 }
 
 .control-hint-en {
-  color: #8b96ab;
+  color: var(--color-subtle);
+}
+
+.length-status {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.length-status span {
+  background: var(--color-panel);
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  color: var(--color-primary);
+  font-size: 0.78rem;
+  font-weight: 800;
+  padding: 0.42rem 0.65rem;
+}
+
+.length-status small {
+  color: var(--color-subtle);
+  font-size: 0.75rem;
 }
 
 .hero h1,
@@ -137,12 +197,12 @@ input:focus {
 .hero p,
 .game-card p,
 .secret-modal p {
-  color: #58657f;
+  color: var(--color-muted);
   line-height: 1.6;
 }
 
 .eyebrow {
-  color: #3157d5;
+  color: var(--color-primary);
   font-size: 0.75rem;
   font-weight: 800;
   letter-spacing: 0.16em;
@@ -156,7 +216,7 @@ input:focus {
   min-width: 0;
   display: flex;
   align-items: stretch;
-  background: #dfe7f6;
+  background: var(--color-panel-strong);
   border-radius: 999px;
   padding: 0.25rem;
   gap: 0.125rem;
@@ -172,7 +232,7 @@ input:focus {
   line-height: 1.2;
   border-radius: 999px;
   background: transparent;
-  color: #42506a;
+  color: var(--color-muted);
   box-shadow: none;
   transform: none;
   border: 1px solid transparent;
@@ -186,14 +246,14 @@ input:focus {
 
 .segmented button:focus-visible {
   outline: none;
-  border-color: #3157d5;
+  border-color: var(--color-primary);
   box-shadow: 0 0 0 2px rgba(49, 87, 213, 0.25);
 }
 
 .segmented button.active {
-  background: #ffffff;
-  color: #172033;
-  box-shadow: 0 2px 10px rgba(32, 42, 70, 0.1);
+  background: var(--color-surface-solid);
+  color: var(--color-text);
+  box-shadow: var(--shadow-sm);
   border-color: rgba(255, 255, 255, 0.9);
 }
 
@@ -221,12 +281,16 @@ input:focus {
   min-width: 3.25rem;
 }
 
+.segmented--language button {
+  min-width: 4.25rem;
+}
+
 .game-card,
 .secret-modal {
-  background: rgba(255, 255, 255, 0.9);
+  background: var(--color-surface);
   border: 1px solid rgba(255, 255, 255, 0.7);
-  border-radius: 30px;
-  box-shadow: 0 24px 70px rgba(24, 38, 75, 0.12);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-lg);
   padding: 1.5rem;
 }
 
@@ -239,17 +303,18 @@ input:focus {
 }
 
 .secondary-button {
-  background: #e7edfb;
-  color: #3157d5;
+  background: var(--color-panel);
+  color: var(--color-primary);
 }
 
 .secondary-button:hover:not(:disabled) {
-  background: #d8e2fa;
+  background: var(--color-panel-strong);
 }
 
 .guess-form {
-  background: #f7f9fe;
-  border-radius: 24px;
+  background: var(--color-surface-muted);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
   margin: 1rem 0;
   padding: 1rem;
 }
@@ -265,28 +330,29 @@ input:focus {
   display: grid;
   gap: 0.75rem;
   grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
 }
 
 .error {
-  color: #b3261e;
+  color: var(--color-error);
   font-weight: 700;
   margin: 0.75rem 0 0;
 }
 
 .winner-banner {
-  background: #e9f8ef;
-  border: 1px solid #bde8ca;
-  border-radius: 20px;
-  color: #176a32;
+  background: var(--color-success-bg);
+  border: 1px solid var(--color-success-border);
+  border-radius: var(--radius-md);
+  color: var(--color-success-text);
   font-weight: 800;
   margin: 1rem 0;
   padding: 1rem;
 }
 
 .turn-card {
-  background: #172033;
-  border-radius: 24px;
-  color: #ffffff;
+  background: var(--color-text);
+  border-radius: var(--radius-lg);
+  color: var(--color-surface-solid);
   display: grid;
   gap: 0.75rem;
   grid-template-columns: repeat(3, 1fr);
@@ -322,7 +388,7 @@ input:focus {
 
 .history-title span,
 .empty-state {
-  color: #64708a;
+  color: var(--color-subtle);
 }
 
 .history-list {
@@ -335,18 +401,20 @@ input:focus {
 
 .history-list li {
   align-items: center;
-  background: #ffffff;
-  border: 1px solid #e2e8f4;
-  border-radius: 18px;
+  background: var(--color-surface-solid);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
   display: grid;
   gap: 0.75rem;
-  grid-template-columns: 140px 1fr 90px;
+  grid-template-columns: minmax(128px, auto) 1fr minmax(96px, auto);
   padding: 0.85rem 1rem;
+  box-shadow: 0 1px 0 rgba(24, 38, 75, 0.03);
 }
 
 .guess-value {
-  background: #eef3fb;
-  border-radius: 12px;
+  background: var(--color-panel);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
   font-weight: 900;
   letter-spacing: 0.18em;
   padding: 0.45rem 0.6rem;
@@ -358,6 +426,7 @@ input:focus {
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
   padding-bottom: 0.6rem;
+  scrollbar-width: thin;
 }
 
 .guess-value .guess-digit {
@@ -371,7 +440,7 @@ input:focus {
   border-radius: 0;
   padding: 0;
   font-weight: 800;
-  color: #172033;
+  color: var(--color-text);
   font-size: 1.25rem;
 }
 
@@ -381,6 +450,8 @@ input:focus {
   align-items: center;
   flex-wrap: nowrap;
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
 }
 
 .digit-box {
@@ -389,9 +460,9 @@ input:focus {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: #ffffff;
-  border: 1px solid #d6e1fb;
-  border-radius: 10px;
+  background: var(--color-surface-solid);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-sm);
   font-weight: 900;
   font-size: 1.25rem;
   letter-spacing: 0.18em;
@@ -399,8 +470,9 @@ input:focus {
 }
 
 .feedback {
-  background: #f1f5ff;
-  border-radius: 10px;
+  background: var(--color-panel);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -417,7 +489,7 @@ input:focus {
 
 .feedback-label {
   font-size: 0.7rem;
-  color: #8b96ab;
+  color: var(--color-subtle);
   font-weight: 700;
   text-transform: none;
 }
@@ -450,6 +522,33 @@ input:focus {
 .secret-modal {
   max-width: 520px;
   width: 100%;
+}
+
+.two-player-stack {
+  display: grid;
+  gap: 1rem;
+}
+
+.player-panel {
+  background: var(--color-surface-muted);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 1rem;
+}
+
+.player-panel h3 {
+  margin: 0 0 0.75rem;
+}
+
+.player-panel label,
+.stacked-label {
+  display: block;
+  font-weight: 800;
+  margin-bottom: 0.5rem;
+}
+
+.stacked-label {
+  margin-top: 0.9rem;
 }
 
 @media (max-width: 760px) {
@@ -519,14 +618,14 @@ input:focus {
 }
 
 .digit-input-field:focus {
-  box-shadow: 0 0 0 4px rgba(49, 87, 213, 0.12);
-  border-radius: 10px;
-  border-color: #d6e1fb;
+  box-shadow: var(--focus-ring);
+  border-radius: var(--radius-sm);
+  border-color: var(--color-border-strong);
 }
 
 /* show a small dot when the input is empty */
 .digit-input-field[value=""] {
-  background-image: radial-gradient(circle, #c6d2f2 50%, transparent 51%);
+  background-image: radial-gradient(circle, var(--color-border-strong) 50%, transparent 51%);
   background-position: center;
   background-repeat: no-repeat;
   background-size: 8px 8px;

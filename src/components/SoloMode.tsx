@@ -72,8 +72,8 @@ export default function SoloMode({
 
   return (
     <Game
-      title={translations[lang].solo + ' mode'}
-      subtitle={translations[lang].description(length)}
+      title={translations[lang].soloTitle}
+      subtitle={translations[lang].description(effectiveLength)}
       guess={guess}
       history={history}
       error={error}
@@ -81,7 +81,7 @@ export default function SoloMode({
       onGuessChange={handleGuessChange}
       onSubmit={handleSubmit}
       onReset={resetGame}
-      digitLength={length}
+      digitLength={effectiveLength}
       hardMode={hardMode}
       lang={lang}
     />
