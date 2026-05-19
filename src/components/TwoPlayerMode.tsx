@@ -1,6 +1,5 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import translations from '../i18n';
-import { useRef } from 'react';
 import { evaluateGuess, validateGuess } from '../utils/game';
 import type { GuessRecord, Player } from '../types';
 
@@ -33,8 +32,8 @@ export default function TwoPlayerMode({
     [history],
   );
 
-  const notStarted = history.length === 0 && !secrets.A && !secrets.B && !guesses.A && !guesses.B;
-  const effectiveLen = notStarted ? pendingLength : length;
+  const effectiveLen = length;
+  const t = translations[lang];
 
   function cleanDigits(value: string, len: number) {
     return value.replace(/\D/g, '').slice(0, len);
@@ -67,7 +66,7 @@ export default function TwoPlayerMode({
     const target: Player = player === 'A' ? 'B' : 'A';
     const targetSecret = secrets[target];
     if (!validateGuess(targetSecret, effectiveLen)) {
-      setGuessErrors((e) => ({ ...e, [player]: 'Target secret not set.' }));
+      setGuessErrors((e) => ({ ...e, [player]: t.targetSecretNotSet }));
       return;
     }
 
@@ -85,7 +84,7 @@ export default function TwoPlayerMode({
     setGuesses((g) => ({ ...g, [player]: '' }));
 
     if (feedback.positionCount === effectiveLen) {
-      setWinnerMessage(translations[lang].foundTwoPlayer(player, target, round));
+      setWinnerMessage(t.foundTwoPlayer(player, target, round));
     }
   }
 
@@ -104,11 +103,11 @@ export default function TwoPlayerMode({
     <section className="game-card two-player-vertical">
       <div className="game-header">
         <div>
-          <h2>2 player mode</h2>
-          <p>Players A and B can each set a private secret and type guesses. Top = Player A, Bottom = Player B.</p>
+          <h2>{t.twoPlayerTitle}</h2>
+          <p>{t.twoPlayerSubtitle}</p>
         </div>
         <button className="secondary-button" type="button" onClick={resetGame}>
-          New game
+          {t.newGame}
         </button>
       </div>
 
@@ -116,8 +115,8 @@ export default function TwoPlayerMode({
 
       <div className="two-player-stack">
         <div className="player-panel player-a">
-          <h3>{translations[lang].playerEnterGuess('A')}</h3>
-          <label>{translations[lang].secretMaskedLabel}</label>
+          <h3>{t.playerLabel('A')}</h3>
+          <label>{t.secretMaskedLabel}</label>
           <input
             type="password"
             inputMode="numeric"
@@ -128,7 +127,7 @@ export default function TwoPlayerMode({
           />
           {secretErrors.A ? <div className="error">{secretErrors.A}</div> : null}
 
-          <label style={{ marginTop: '0.75rem' }}>{translations[lang].guessLabel('B')}</label>
+          <label className="stacked-label">{t.guessLabel('B')}</label>
           <div className="guess-row">
             <div className="digit-input" role="group" aria-label={`${effectiveLen} digit input A`}>
               {Array.from({ length: effectiveLen }).map((_, i) => {
@@ -188,15 +187,15 @@ export default function TwoPlayerMode({
               })}
             </div>
             <button type="button" onClick={() => submitGuess('A')}>
-              Guess
+              {t.guess}
             </button>
           </div>
           {guessErrors.A ? <div className="error">{guessErrors.A}</div> : null}
         </div>
 
         <div className="player-panel player-b">
-          <h3>{translations[lang].playerEnterGuess('B')}</h3>
-          <label>{translations[lang].secretMaskedLabel}</label>
+          <h3>{t.playerLabel('B')}</h3>
+          <label>{t.secretMaskedLabel}</label>
           <input
             type="password"
             inputMode="numeric"
@@ -207,7 +206,7 @@ export default function TwoPlayerMode({
           />
           {secretErrors.B ? <div className="error">{secretErrors.B}</div> : null}
 
-          <label style={{ marginTop: '0.75rem' }}>{translations[lang].guessLabel('A')}</label>
+          <label className="stacked-label">{t.guessLabel('A')}</label>
           <div className="guess-row">
             <div className="digit-input" role="group" aria-label={`${effectiveLen} digit input B`}>
               {Array.from({ length: effectiveLen }).map((_, i) => {
@@ -242,7 +241,7 @@ export default function TwoPlayerMode({
                       } else if (key === 'ArrowLeft' && i > 0) {
                         inputRefsB.current[i - 1]?.focus();
                         e.preventDefault();
-                      } else if (key === 'ArrowRight' && i < length - 1) {
+                      } else if (key === 'ArrowRight' && i < effectiveLen - 1) {
                         inputRefsB.current[i + 1]?.focus();
                         e.preventDefault();
                       }
@@ -267,7 +266,7 @@ export default function TwoPlayerMode({
               })}
             </div>
             <button type="button" onClick={() => submitGuess('B')}>
-              Guess
+              {t.guess}
             </button>
           </div>
           {guessErrors.B ? <div className="error">{guessErrors.B}</div> : null}
@@ -276,12 +275,12 @@ export default function TwoPlayerMode({
 
       <section className="history-panel" aria-label="Guess history">
         <div className="history-title">
-          <h3>Guess history</h3>
-          <span>{history.length} guesses</span>
+          <h3>{t.guessHistory}</h3>
+          <span>{t.guesses(history.length)}</span>
         </div>
 
         {history.length === 0 ? (
-          <p className="empty-state">No guesses yet.</p>
+          <p className="empty-state">{t.noGuessesShort}</p>
         ) : (
           <ol className="history-list">
             {history.map((record) => (
@@ -293,8 +292,17 @@ export default function TwoPlayerMode({
                     </span>
                   ))}
                 </div>
-                <div>{`Player ${record.player}`}</div>
-                <div className="feedback">{hardMode ? `${record.positionCount}` : `${record.presentCount} / ${record.positionCount}`}</div>
+                <div>{t.playerLabel(record.player)}</div>
+                <div className="feedback-column">
+                  {!hardMode ? (
+                    <div className="feedback-label" aria-hidden="true">
+                      {t.feedbackLabelEasy}
+                    </div>
+                  ) : null}
+                  <div className="feedback">
+                    {hardMode ? `${record.positionCount}` : `${record.presentCount} / ${record.positionCount}`}
+                  </div>
+                </div>
               </li>
             ))}
           </ol>

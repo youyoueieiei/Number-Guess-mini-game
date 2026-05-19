@@ -1,4 +1,4 @@
-import { useRef, useEffect } from 'react';
+import { useRef } from 'react';
 import translations from '../i18n';
 import type { FormEvent, ReactNode } from 'react';
 import type { GuessRecord, Player } from '../types';
@@ -69,7 +69,7 @@ export default function Game({
 
       <form className="guess-form" onSubmit={handleSubmit}>
         <label htmlFor="guess-input">
-          {currentPlayer === 'Solo' ? 'Your guess' : `Player ${currentPlayer}, enter your guess`}
+          {currentPlayer === 'Solo' ? t.yourGuess : t.playerEnterGuess(currentPlayer)}
         </label>
         <div className="guess-row">
         <div className="digit-input" role="group" aria-label={`${dl} digit input`}>
@@ -107,8 +107,8 @@ export default function Game({
                     } else if (key === 'ArrowLeft' && i > 0) {
                       inputRefs.current[i - 1]?.focus();
                       e.preventDefault();
-                    } else if (key === 'ArrowRight' && i < 3) {
-                      if (i < dl - 1) inputRefs.current[i + 1]?.focus();
+                    } else if (key === 'ArrowRight' && i < dl - 1) {
+                      inputRefs.current[i + 1]?.focus();
                       e.preventDefault();
                     }
                   }}
@@ -132,7 +132,7 @@ export default function Game({
             })}
           </div>
           <button type="submit" disabled={disabled || Boolean(winnerMessage)}>
-            Guess
+            {t.guess}
           </button>
         </div>
         {error ? (
@@ -144,18 +144,18 @@ export default function Game({
 
       <section className="history-panel" aria-label="Guess history">
         <div className="history-title">
-          <h3>Guess history</h3>
-          <span>{history.length} guesses</span>
+          <h3>{t.guessHistory}</h3>
+          <span>{t.guesses(history.length)}</span>
         </div>
 
         {history.length === 0 ? (
-          <p className="empty-state">No guesses yet. Try a {dl} digit number to start.</p>
+          <p className="empty-state">{t.noGuesses(dl)}</p>
         ) : (
           <ol className="history-list">
             {history.map((record) => (
               <li key={record.id}>
                 <div className="guess-value">
-                  {Array.from({ length: dl }).map((_, i) => (
+                  {Array.from({ length: record.guess.length || dl }).map((_, i) => (
                     <span
                       key={i}
                       className="guess-digit"
@@ -165,7 +165,7 @@ export default function Game({
                     </span>
                   ))}
                 </div>
-                <div>{record.player === 'Solo' ? `Round ${record.round}` : `Player ${record.player}`}</div>
+                <div>{record.player === 'Solo' ? t.round(record.round) : t.playerLabel(record.player)}</div>
                 <div className="feedback-column">
                   {!hardMode ? (
                     <div className="feedback-label" aria-hidden="true">

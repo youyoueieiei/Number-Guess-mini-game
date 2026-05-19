@@ -12,20 +12,31 @@ export default function App() {
   const [activeLength, setActiveLength] = useState(4);
   const [hardMode, setHardMode] = useState(false);
   const [lang, setLang] = useState<'en' | 'zh'>('en');
+  const t = translations[lang];
+  const hasPendingLength = pendingLength !== activeLength;
 
   return (
     <main className="app-shell">
       <section className="hero">
         <div className="hero-text">
-          <p className="eyebrow">{translations[lang].eyebrow(length)}</p>
-          <h1>{translations[lang].title}</h1>
-          <p>{translations[lang].description(length)}</p>
+          <p className="eyebrow">{t.eyebrow(activeLength)}</p>
+          <h1>{t.title}</h1>
+          <p>{t.description(activeLength)}</p>
+          <div className="length-status" aria-live="polite">
+            <span>{t.currentLength(activeLength)}</span>
+            {hasPendingLength ? (
+              <>
+                <span>{t.nextLength(pendingLength)}</span>
+                <small>{t.lengthPending}</small>
+              </>
+            ) : null}
+          </div>
         </div>
 
-        <div className="hero-controls" aria-label="Game options">
+        <div className="hero-controls" aria-label={t.gameOptions}>
           <div className="control-row">
             <span className="control-label" id="hero-label-players">
-              Players
+              {t.players}
             </span>
             <div
               className="segmented segmented--players"
@@ -39,7 +50,7 @@ export default function App() {
                 aria-selected={mode === 'solo'}
                 onClick={() => setMode('solo')}
               >
-                {translations[lang].solo}
+                {t.solo}
               </button>
               <button
                 className={mode === 'two-player' ? 'active' : ''}
@@ -48,14 +59,14 @@ export default function App() {
                 aria-selected={mode === 'two-player'}
                 onClick={() => setMode('two-player')}
               >
-                {translations[lang].twoPlayers}
+                {t.twoPlayers}
               </button>
             </div>
           </div>
 
           <div className="control-row">
-                <span className="control-label" id="hero-label-digits">
-              {translations[lang].digits}
+            <span className="control-label" id="hero-label-digits">
+              {t.digits}
             </span>
             <div
               className="segmented segmented--digits"
@@ -79,7 +90,7 @@ export default function App() {
 
           <div className="control-row">
             <span className="control-label" id="hero-label-difficulty">
-              Difficulty
+              {t.difficulty}
             </span>
             <div className="control-col">
               <div
@@ -94,7 +105,7 @@ export default function App() {
                   aria-checked={!hardMode}
                   onClick={() => setHardMode(false)}
                 >
-                  {translations[lang].easy}
+                  {t.easy}
                 </button>
                 <button
                   className={hardMode ? 'active' : ''}
@@ -103,29 +114,44 @@ export default function App() {
                   aria-checked={hardMode}
                   onClick={() => setHardMode(true)}
                 >
-                  {translations[lang].hard}
+                  {t.hard}
                 </button>
               </div>
-              <p className="control-hint">{translations[lang].hardHint}</p>
+              <p className="control-hint">{t.hardHint}</p>
+            </div>
+          </div>
+
+          <div className="control-row">
+            <span className="control-label" id="hero-label-language">
+              {t.language}
+            </span>
+            <div
+              className="segmented segmented--language"
+              role="radiogroup"
+              aria-labelledby="hero-label-language"
+            >
+              <button
+                className={lang === 'en' ? 'active' : ''}
+                type="button"
+                role="radio"
+                aria-checked={lang === 'en'}
+                onClick={() => setLang('en')}
+              >
+                English
+              </button>
+              <button
+                className={lang === 'zh' ? 'active' : ''}
+                type="button"
+                role="radio"
+                aria-checked={lang === 'zh'}
+                onClick={() => setLang('zh')}
+              >
+                中文
+              </button>
             </div>
           </div>
         </div>
       </section>
-
-      <div className="top-right-lang">
-        <label htmlFor="lang-select" className="control-label" style={{ marginRight: 8 }}>
-          Lang
-        </label>
-        <select
-          id="lang-select"
-          value={lang}
-          onChange={(e) => setLang(e.target.value as 'en' | 'zh')}
-          aria-label="Language"
-        >
-          <option value="en">English</option>
-          <option value="zh">中文</option>
-        </select>
-      </div>
 
       {mode === 'solo' ? (
         <SoloMode
