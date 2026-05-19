@@ -32,8 +32,7 @@ export default function TwoPlayerMode({
     [history],
   );
 
-  const notStarted = history.length === 0 && !secrets.A && !secrets.B && !guesses.A && !guesses.B;
-  const effectiveLen = notStarted ? pendingLength : length;
+  const effectiveLen = length;
   const t = translations[lang];
 
   function cleanDigits(value: string, len: number) {

@@ -26,7 +26,7 @@ export default function SoloMode({
   const [error, setError] = useState<string | null>(null);
   const [history, setHistory] = useState<GuessRecord[]>([]);
   const [winnerMessage, setWinnerMessage] = useState<string | null>(null);
-  const effectiveLength = history.length === 0 ? pendingLength : length;
+  const effectiveLength = length;
   const secret = useMemo(() => createSoloSecret(effectiveLength), [gameId, effectiveLength]);
 
   function handleGuessChange(value: string) {
