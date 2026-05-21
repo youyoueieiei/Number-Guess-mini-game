@@ -16,4 +16,26 @@ describe('App', () => {
     expect(screen.getByRole('heading', { name: /player a/i })).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: /player b/i })).toBeInTheDocument();
   });
+
+  it('allows guesses after both two-player secrets are locked', async () => {
+    const user = userEvent.setup();
+
+    render(<App />);
+
+    await user.click(screen.getByRole('tab', { name: /2 players/i }));
+    await user.type(screen.getByLabelText(/player a secret number/i), '1234');
+    await user.type(screen.getByLabelText(/player b secret number/i), '6666');
+
+    await user.click(screen.getAllByRole('button', { name: /lock my secret/i })[0]);
+    await user.click(screen.getAllByRole('button', { name: /lock my secret/i })[0]);
+
+    await user.type(screen.getByLabelText(/a digit 1/i), '6');
+    await user.type(screen.getByLabelText(/a digit 2/i), '6');
+    await user.type(screen.getByLabelText(/a digit 3/i), '6');
+    await user.type(screen.getByLabelText(/a digit 4/i), '6');
+    await user.click(screen.getAllByRole('button', { name: /^guess$/i })[0]);
+
+    expect(screen.queryByText(/target secret not set/i)).not.toBeInTheDocument();
+    expect(screen.getByText(/player a guessed player b's number/i)).toBeInTheDocument();
+  });
 });
