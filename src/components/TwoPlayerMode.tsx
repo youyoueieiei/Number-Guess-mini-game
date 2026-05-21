@@ -23,6 +23,7 @@ export default function TwoPlayerMode({
   const [guessErrors, setGuessErrors] = useState<Record<Player, string | null>>({ A: null, B: null });
   const [history, setHistory] = useState<GuessRecord[]>([]);
   const [winnerMessage, setWinnerMessage] = useState<string | null>(null);
+  const [secretsLocked, setSecretsLocked] = useState<Record<Player, boolean>>({ A: false, B: false });
 
   const playerRounds = useMemo(
     () => ({
@@ -63,9 +64,16 @@ export default function TwoPlayerMode({
       return;
     }
 
+    // Require both players to have locked their secrets before guessing.
+    if (!secretsLocked.A || !secretsLocked.B) {
+      setGuessErrors((e) => ({ ...e, [player]: t.setSecretsFirst }));
+      return;
+    }
+
     const target: Player = player === 'A' ? 'B' : 'A';
     const targetSecret = secrets[target];
-    if (!validateGuess(targetSecret, effectiveLen)) {
+    const targetSecretError = validateGuess(targetSecret, effectiveLen);
+    if (targetSecretError) {
       setGuessErrors((e) => ({ ...e, [player]: t.targetSecretNotSet }));
       return;
     }
@@ -82,6 +90,7 @@ export default function TwoPlayerMode({
 
     setHistory((h) => [record, ...h]);
     setGuesses((g) => ({ ...g, [player]: '' }));
+    setGuessErrors((e) => ({ ...e, [player]: null }));
 
     if (feedback.positionCount === effectiveLen) {
       setWinnerMessage(t.foundTwoPlayer(player, target, round));
@@ -96,7 +105,29 @@ export default function TwoPlayerMode({
     setGuessErrors({ A: null, B: null });
     setHistory([]);
     setWinnerMessage(null);
+    setSecretsLocked({ A: false, B: false });
     onApplyLength?.();
+  }
+
+  function lockBothSecrets() {
+    const effectiveLen = length;
+    const errA = validateGuess(secrets.A, effectiveLen);
+    const errB = validateGuess(secrets.B, effectiveLen);
+    if (errA || errB) {
+      setSecretErrors((e) => ({ ...e, A: errA ?? null, B: errB ?? null }));
+      return;
+    }
+    setSecretsLocked({ A: true, B: true });
+  }
+
+  function lockMySecret(player: Player) {
+    const effectiveLen = length;
+    const err = validateGuess(secrets[player], effectiveLen);
+    if (err) {
+      setSecretErrors((e) => ({ ...e, [player]: err }));
+      return;
+    }
+    setSecretsLocked((s) => ({ ...s, [player]: true }));
   }
 
   return (
@@ -106,9 +137,19 @@ export default function TwoPlayerMode({
           <h2>{t.twoPlayerTitle}</h2>
           <p>{t.twoPlayerSubtitle}</p>
         </div>
-        <button className="secondary-button" type="button" onClick={resetGame}>
-          {t.newGame}
-        </button>
+        <div className="game-actions">
+          <button className="secondary-button" type="button" onClick={resetGame}>
+            {t.newGame}
+          </button>
+          <button
+            className="primary-button"
+            type="button"
+            onClick={lockBothSecrets}
+            disabled={secretsLocked.A && secretsLocked.B}
+          >
+            {t.setSecretsButton}
+          </button>
+        </div>
       </div>
 
       {winnerMessage ? <div className="winner-banner">{winnerMessage}</div> : null}
@@ -122,10 +163,26 @@ export default function TwoPlayerMode({
             inputMode="numeric"
             maxLength={effectiveLen}
             value={secrets.A}
+            aria-label={`${t.playerLabel('A')} secret number`}
             onChange={(e) => setSecret('A', e.target.value, effectiveLen)}
+            disabled={secretsLocked.A}
             placeholder={Array.from({ length: effectiveLen }).map(() => '•').join('')}
           />
           {secretErrors.A ? <div className="error">{secretErrors.A}</div> : null}
+          <div className="secret-lock-row">
+            {secretsLocked.A ? (
+              <span className="locked-badge">{t.mySecretLocked}</span>
+            ) : (
+              <button
+                type="button"
+                className="secondary-button"
+                onClick={() => lockMySecret('A')}
+                disabled={secrets.A.length !== length}
+              >
+                {t.lockMySecret}
+              </button>
+            )}
+          </div>
 
           <label className="stacked-label">{t.guessLabel('B')}</label>
           <div className="guess-row">
@@ -201,10 +258,26 @@ export default function TwoPlayerMode({
             inputMode="numeric"
             maxLength={effectiveLen}
             value={secrets.B}
+            aria-label={`${t.playerLabel('B')} secret number`}
             onChange={(e) => setSecret('B', e.target.value, effectiveLen)}
+            disabled={secretsLocked.B}
             placeholder={Array.from({ length: effectiveLen }).map(() => '•').join('')}
           />
           {secretErrors.B ? <div className="error">{secretErrors.B}</div> : null}
+          <div className="secret-lock-row">
+            {secretsLocked.B ? (
+              <span className="locked-badge">{t.mySecretLocked}</span>
+            ) : (
+              <button
+                type="button"
+                className="secondary-button"
+                onClick={() => lockMySecret('B')}
+                disabled={secrets.B.length !== length}
+              >
+                {t.lockMySecret}
+              </button>
+            )}
+          </div>
 
           <label className="stacked-label">{t.guessLabel('A')}</label>
           <div className="guess-row">
@@ -276,7 +349,10 @@ export default function TwoPlayerMode({
       <section className="history-panel" aria-label="Guess history">
         <div className="history-title">
           <h3>{t.guessHistory}</h3>
-          <span>{t.guesses(history.length)}</span>
+          <div className="history-counts" aria-label="Player guess counts">
+            <span>{t.playerGuesses('A', playerRounds.A)}</span>
+            <span>{t.playerGuesses('B', playerRounds.B)}</span>
+          </div>
         </div>
 
         {history.length === 0 ? (
